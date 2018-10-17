@@ -1,0 +1,44 @@
+<script>
+	var tableToExcel = (function () {
+        var uri = 'data:application/vnd.ms-excel;base64,'
+        , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+        , base64 = function (s) { return window.btoa(unescape(encodeURIComponent(s))) }
+        , format = function (s, c) { return s.replace(/{(\w+)}/g, function (m, p) { return c[p]; }) }
+        return function (table, name) {
+            if (!table.nodeType) var table = document.getElementById("tableExcel");
+            console.log("avgffhhhhhhhhh");
+            //console.log(table.rows.length);
+            var rows = 0;
+            var outstr = "";
+            for(var j = 0;j < table.rows.length;j++){
+                for(var i = 0;i < table.rows[j].cells.length;i++){
+                    if（i == 0 && rows > 0){
+                         outstr += "\t";
+                         rows -= -1;
+                    }
+                    outstr += table.rows[j].cells[i].innerText + "\t";
+                    if(table.rows[j].cells[i].colSpan > 1){
+                         for(var k = 0;k < table.rows[j].cells[i].colSpan - 1;k++){
+                             outstr += "\t";
+                         }
+                    }
+                    if(i == 0){
+                        if(rows ==0 && table.rows[j].cells[j].rowSpan > 1){
+                        rows = table.rows[j],cells[i].rowSpan -1;
+                        }
+                    }
+                }
+                    outstr += "\r\n";
+            }
+            console.log(table.innerText);
+            console.log(outstr);
+            //var ctx = { worksheet: name || 'Worksheet', table: table.innerText };
+            var ctx = { worksheet: name || 'Worksheet', table:outstr };
+            document.getElementById("dlink").href = uri + base64(format(template, ctx));
+            document.getElementById("dlink").download ='非党信息.xls';
+            document.getElementById("dlink").click();
+        }
+    })();
+
+
+    我是想要导出翻页table中的数据到excel文件，但是通过table的id，获取到的innerText只有当前页面的数据，但是后来测试发现可以通过for循环遍历拿到所有数据，但是获取到的数据打印出来发现只有第一页的直接符合excel的规范（就是一个字段和一个字段看上去之间有一个空格），但是剩下页的数据格式就是那种有换行的，所以中间有一个大的for循环，是我想把数据按cell拿出来格式化，把这段for删掉的话，就不会有我刚刚给你截图的那个错了。。
